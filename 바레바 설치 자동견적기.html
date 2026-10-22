@@ -1,0 +1,754 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>바레바 설치 자동견적기</title>
+<style>
+  :root{
+    --bg:#0d0d0f;
+    --card:#1a1a1d;
+    --card-2:#161618;
+    --accent:#f5a623;
+    --accent-2:#ffb946;
+    --text:#f2f2f2;
+    --text-dim:#a3a3a8;
+    --border:#2a2a2e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+  .wrap{
+    width:100%;
+    max-width:480px;
+    padding:28px 20px 60px;
+  }
+  .header-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+  }
+  h1{
+    font-size:23px;
+    font-weight:800;
+    margin:0 0 4px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    word-break:keep-all;
+  }
+  .subtitle{
+    font-size:12px;
+    color:var(--text-dim);
+    margin-bottom:22px;
+  }
+  .gear-btn{
+    width:38px;height:38px;border-radius:10px;flex-shrink:0;
+    background:var(--card);border:1px solid var(--border);color:var(--text-dim);
+    font-size:17px;cursor:pointer;
+  }
+  .section-title{
+    font-size:14px;
+    font-weight:700;
+    color:var(--accent);
+    margin:28px 0 12px;
+    letter-spacing:.02em;
+  }
+  .section-title:first-of-type{margin-top:0;}
+
+  /* 바레바 stepper block */
+  .stepper{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .stepper .label{font-size:14px;font-weight:600;}
+  .stepper-controls{display:flex;align-items:center;gap:10px;}
+  .stepper button{
+    width:40px;height:40px;border-radius:10px;border:none;
+    background:#2c2c30;color:#fff;font-size:20px;font-weight:600;cursor:pointer;
+  }
+  .stepper .value{font-size:22px;font-weight:800;color:var(--accent);min-width:44px;text-align:center;}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:16px 18px;
+    margin-bottom:12px;
+  }
+  .card-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .card-title{font-size:15px;font-weight:700;}
+  .card-desc{font-size:12.5px;color:var(--text-dim);margin-top:3px;line-height:1.4;}
+  .badge-new{
+    font-size:10px;background:var(--accent);color:#111;padding:1px 6px;
+    border-radius:6px;font-weight:800;margin-left:6px;vertical-align:middle;
+  }
+  .checkbox{
+    width:28px;height:28px;border-radius:8px;background:var(--accent);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    cursor:pointer;user-select:none;transition:background .15s;
+  }
+  .checkbox.off{background:#3a3a3f;}
+  .checkbox.off svg{opacity:0;}
+  .checkbox svg{width:16px;height:16px;}
+
+  .qty-row{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:12px;padding-top:12px;border-top:1px solid var(--border);
+  }
+  .qty-row .unit-price{font-size:12px;color:var(--text-dim);}
+  .qty-input{
+    display:flex;align-items:center;gap:8px;
+    background:#101012;border:1px solid var(--border);border-radius:10px;padding:8px 12px;
+  }
+  .qty-input button{
+    width:26px;height:26px;border-radius:6px;border:none;background:#2c2c30;color:#fff;font-size:15px;cursor:pointer;
+  }
+  .qty-input .n{font-size:15px;font-weight:700;min-width:22px;text-align:center;}
+  .qty-input .u{font-size:12px;color:var(--text-dim);}
+
+  .distance-card .card-desc strong{color:var(--text);}
+  .distance-input{
+    margin-top:14px;background:#101012;border:1px solid var(--border);border-radius:12px;
+    padding:12px 16px;display:flex;align-items:baseline;gap:8px;width:130px;
+  }
+  .distance-input input{
+    background:none;border:none;color:#fff;font-size:20px;font-weight:800;width:64px;outline:none;
+  }
+  .distance-input span{font-size:14px;color:var(--text-dim);}
+
+  .base-copy-row{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:#101012;border:1px solid var(--border);border-radius:12px;
+    padding:12px 14px;margin-top:14px;
+  }
+  .base-copy-label{font-size:12px;color:var(--text-dim);line-height:1.5;}
+  .base-copy-addr{font-size:13.5px;color:#fff;font-weight:700;}
+  .base-copy-row button{
+    flex-shrink:0;background:#2c2c30;color:#fff;border:none;border-radius:10px;
+    padding:9px 14px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;
+  }
+  .addr-row{
+    display:flex;gap:8px;margin-top:14px;
+  }
+  .addr-row input{
+    flex:1;min-width:0;background:#101012;border:1px solid var(--border);border-radius:12px;
+    padding:12px 14px;color:#fff;font-size:14px;outline:none;
+  }
+  .addr-row button, .addr-row a{
+    flex-shrink:0;background:var(--accent);color:#111;border:none;border-radius:12px;
+    padding:0 18px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;
+    display:flex;align-items:center;justify-content:center;text-decoration:none;
+  }
+  .addr-row button:disabled{opacity:.5;cursor:default;}
+  .addr-row a.disabled{opacity:.5;pointer-events:none;}
+  .addr-status{font-size:12px;color:var(--text-dim);margin-top:8px;min-height:16px;line-height:1.4;}
+  .addr-status.error{color:#ff8a8a;}
+  .addr-status.ok{color:var(--accent);}
+  .addr-fallback{font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.5;}
+  .addr-fallback code{background:#101012;border:1px solid var(--border);border-radius:4px;padding:1px 5px;color:#fff;}
+  .manual-distance-label{font-size:12px;color:var(--text-dim);margin-top:16px;margin-bottom:0;}
+
+  .breakdown{
+    background:var(--card-2);border:1px solid var(--border);border-radius:16px;
+    padding:18px 20px;margin:24px 0;
+  }
+  .breakdown-title{font-size:13px;font-weight:700;color:var(--text-dim);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em;}
+  .row{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;color:var(--text);}
+  .row.dim{color:var(--text-dim);font-size:13px;}
+  .row.highlight{color:var(--accent);font-weight:700;}
+  .divider{height:1px;background:var(--border);margin:8px 0;}
+
+  .total-card{
+    background:#fff;color:#111;border-radius:20px;padding:28px 22px;text-align:center;
+  }
+  .total-badge{
+    display:inline-block;background:#eee;color:#555;font-size:13px;font-weight:600;
+    padding:7px 16px;border-radius:999px;margin-bottom:14px;
+  }
+  .total-amount{font-size:38px;font-weight:900;color:var(--accent);}
+  .total-amount span{font-size:18px;font-weight:600;color:#111;margin-left:4px;}
+  .total-note{margin-top:12px;font-size:12px;color:#888;line-height:1.5;}
+  .share-quote-btn{
+    width:100%;margin-top:16px;background:#111;color:#fff;border:none;
+    border-radius:12px;padding:13px;font-size:13.5px;font-weight:700;cursor:pointer;
+  }
+  .reset-all-btn{
+    width:100%;margin:14px 0 24px;background:none;border:1px solid var(--border);color:var(--text-dim);
+    border-radius:12px;padding:12px;font-size:12.5px;font-weight:600;cursor:pointer;
+  }
+
+  /* 항목 선택 시 총액 카드에 살짝 반짝임을 줘서 반영됐다는 걸 체감시킨다 */
+  @keyframes totalFlash{
+    0%{box-shadow:0 0 0 0 rgba(245,166,35,.55);}
+    100%{box-shadow:0 0 0 16px rgba(245,166,35,0);}
+  }
+  .total-card.flash{animation:totalFlash .6s ease-out;}
+  @media (prefers-reduced-motion: reduce){
+    .total-card.flash{animation:none;}
+  }
+
+  /* ===== 관리자 모드 ===== */
+  .admin-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.65);
+    display:none;align-items:flex-end;justify-content:center;z-index:1000;
+  }
+  .admin-overlay.open{display:flex;}
+  .admin-modal{
+    background:var(--card);width:100%;max-width:480px;max-height:88vh;overflow-y:auto;
+    border-radius:20px 20px 0 0;padding:24px 20px 28px;
+  }
+  .admin-modal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px;}
+  .admin-modal h2{font-size:17px;margin:0;}
+  .admin-sub{font-size:12px;color:var(--text-dim);margin-bottom:18px;}
+  .admin-link-btn{background:none;border:none;color:var(--text-dim);font-size:12px;cursor:pointer;text-decoration:underline;padding:0;}
+  .admin-section-title{font-size:12px;font-weight:700;color:var(--accent);margin:18px 0 10px;letter-spacing:.02em;}
+  .admin-section-title:first-of-type{margin-top:0;}
+  .admin-field{margin-bottom:10px;}
+  .admin-field label{display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:6px;}
+  .admin-field .field-input{
+    display:flex;align-items:center;gap:8px;background:#101012;
+    border:1px solid var(--border);border-radius:10px;padding:10px 12px;
+  }
+  .admin-field input{flex:1;background:none;border:none;color:#fff;font-size:15px;font-weight:700;outline:none;min-width:0;}
+  .admin-field .unit{font-size:12px;color:var(--text-dim);white-space:nowrap;}
+  .admin-actions{display:flex;gap:10px;margin-top:22px;}
+  .admin-actions button{flex:1;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;}
+  .btn-primary{background:var(--accent);color:#111;}
+  .btn-secondary{background:#2c2c30;color:#fff;}
+  .btn-reset{background:none;border:1px solid #5a3a3a;color:#e08787;width:100%;padding:12px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;margin-top:10px;}
+  .admin-error{color:#ff6b6b;font-size:12.5px;margin-top:10px;display:none;}
+  .admin-login-input{
+    width:100%;background:#101012;border:1px solid var(--border);border-radius:10px;
+    padding:14px;color:#fff;font-size:18px;letter-spacing:4px;text-align:center;outline:none;margin-top:16px;
+  }
+</style>
+<div class="wrap">
+  <div class="header-row">
+    <div>
+      <h1>🏗️ 발레바빌더 견적 계산기</h1>
+      <div class="subtitle">기준지: 하남시 풍산동 로얄팰리스테크노1차 · 항목을 선택하면 실시간으로 합산됩니다</div>
+    </div>
+    <button class="gear-btn" id="gearBtn" title="관리자 모드">⚙️</button>
+  </div>
+
+  <div class="section-title">① 바레바 시공</div>
+  <div class="card">
+    <div class="card-row">
+      <div>
+        <div class="card-title">바레바(철기둥) 신규 시공 신청</div>
+        <div class="card-desc">신규 설치가 필요 없으시면 체크를 해제해주세요 (아래 지주 개수·마루바닥 항목이 견적에서 빠집니다)</div>
+      </div>
+      <div class="checkbox" id="barrebaCheckbox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+    </div>
+  </div>
+  <div id="barrebaDetail">
+    <div class="stepper">
+      <div class="label">설치할 철기둥(지주) 개수</div>
+      <div class="stepper-controls">
+        <button id="minus">−</button>
+        <div class="value" id="postCount">10</div>
+        <button id="plus">+</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-row">
+        <div>
+          <div class="card-title">무용연습실 마루바닥 시공</div>
+          <div class="card-desc">난방필름, 엑셀보일러 등 난이도 증액 (+20%) <span class="badge-new">변경</span></div>
+        </div>
+        <div class="checkbox" id="floorCheckbox">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">② 출장 거리</div>
+  <div class="card distance-card">
+    <div class="card-desc">기준지로부터 왕복 <strong>60km 무료</strong>, 이후 km당 500원</div>
+
+    <div class="base-copy-row">
+      <div class="base-copy-label">① 기준지 주소<br><span class="base-copy-addr" id="baseAddrText">하남시 풍산동 로얄팰리스테크노1차</span></div>
+      <button id="baseCopyBtn" type="button">📋 복사</button>
+    </div>
+
+    <div class="addr-row">
+      <input type="text" id="addrInput" placeholder="② 고객 주소 입력 (예: 성남시 분당구 판교역로 166)">
+      <a id="addrCalcBtn" href="https://map.kakao.com/" target="_blank" rel="noopener noreferrer">카카오맵 열기</a>
+    </div>
+    <div class="addr-status" id="addrStatus">① 기준지 주소를 복사 → ② 고객 주소를 입력하면 아래 링크가 자동으로 준비됩니다 → ③ "카카오맵 열기"를 눌러 새 창에서 출발지 칸에 붙여넣기하고 도착지에서 검색된 고객 주소를 선택 → ④ 표시되는 실제 왕복거리(km)를 아래 칸에 입력하세요.</div>
+    <div class="addr-fallback">버튼을 눌러도 안 열리면: 주소창에 <code>map.kakao.com</code>을 직접 입력해 카카오맵을 연 뒤, 검색창에 고객 주소를 붙여넣어 검색해주세요.</div>
+    <div class="manual-distance-label">④ 왕복 거리 (km, 카카오맵에서 확인한 값을 직접 입력)</div>
+    <div class="distance-input">
+      <input type="number" id="distance" value="60" min="0">
+      <span>km</span>
+    </div>
+  </div>
+
+  <div class="breakdown">
+    <div class="breakdown-title">견적 상세</div>
+    <div class="row" id="baseRow"><span>바레바 기본 비용 (1~6개)</span><span id="baseCost">300,000원</span></div>
+    <div class="row" id="tier1Row"><span id="tier1Label">추가 (7~10개)</span><span id="tier1Cost">+200,000원</span></div>
+    <div class="row" id="tier2Row"><span id="tier2Label">추가 (11개~)</span><span id="tier2Cost">+0원</span></div>
+    <div class="row highlight" id="surchargeRow"><span>마루바닥 할증 (20%)</span><span id="surchargeCost">+100,000원</span></div>
+    <div class="row dim" id="distanceRow" style="display:none;"><span>출장 거리 추가</span><span id="distanceCost">+0원</span></div>
+    <div class="divider" id="vatDivider" style="display:none;"></div>
+    <div class="row" id="vatRow" style="display:none;"><span>부가세 (VAT 10%)</span><span id="vatCost">+0원</span></div>
+  </div>
+
+  <div class="card vat-toggle-card">
+    <div class="card-row">
+      <div>
+        <div class="card-title">부가세(VAT) 10% 포함</div>
+        <div class="card-desc">기본 계산은 부가세 별도이며, 필요할 때만 체크해서 포함할 수 있습니다.</div>
+      </div>
+      <div class="checkbox off" id="vatCheckbox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="total-card">
+    <div class="total-badge">견적 총액 (지주 <span id="totalPostLabel">10</span>개 기준)</div>
+    <div class="total-amount"><span id="totalAmount">600,000</span><span>원</span></div>
+    <div class="total-note" id="totalNote">* 자재비는 별도이며, 부가세(VAT)는 기본 미포함입니다 (위 체크박스로 선택 포함 가능).<br>* 공정단가표 기준 자동 산정 견적이며, 실측 후 변동될 수 있습니다.</div>
+    <button class="share-quote-btn" id="shareQuoteBtn">📤 이 견적 공유/복사하기</button>
+  </div>
+  <button class="reset-all-btn" id="resetAllBtn">🔄 전체 선택 초기화</button>
+</div>
+
+<!-- ===== 관리자 모드 오버레이 ===== -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-modal" id="adminModal"></div>
+</div>
+
+<script>
+  // ===== 공정단가표 기본값 =====
+  const DEFAULT_PRICES = {
+    base: 300000,
+    tier1Unit: 50000,   // 7~10개
+    tier2Unit: 40000,   // 11개~
+    floorSurchargeRate: 0.20,
+    freeDistance: 60,
+    distanceUnit: 500,
+  };
+
+  const ADMIN_PW_KEY = 'bb_admin_password';
+  const ADMIN_PRICES_KEY = 'bb_admin_prices';
+  const ADMIN_SESSION_KEY = 'bb_admin_authed';
+  const DEFAULT_ADMIN_PW = '1234';
+
+  function loadPrices(){
+    const saved = localStorage.getItem(ADMIN_PRICES_KEY);
+    if(saved){
+      try{ return Object.assign({}, DEFAULT_PRICES, JSON.parse(saved)); }
+      catch(e){ return Object.assign({}, DEFAULT_PRICES); }
+    }
+    return Object.assign({}, DEFAULT_PRICES);
+  }
+
+  const PRICES = loadPrices();
+
+  // 관리자 패널에서 편집 가능한 필드 정의
+  const ADMIN_FIELDS = [
+    { key: 'base', label: '바레바 기본 비용 (1~6개)', unit: '원', section: '바레바 시공' },
+    { key: 'tier1Unit', label: '지주 추가 단가 (7~10개)', unit: '원/개', section: '바레바 시공' },
+    { key: 'tier2Unit', label: '지주 추가 단가 (11개~)', unit: '원/개', section: '바레바 시공' },
+    { key: 'floorSurchargeRate', label: '마루바닥 할증률', unit: '%', percent: true, section: '바레바 시공' },
+    { key: 'freeDistance', label: '무료 왕복 거리', unit: 'km', section: '출장 거리' },
+    { key: 'distanceUnit', label: '초과 거리 단가', unit: '원/km', section: '출장 거리' },
+  ];
+
+  let barrebaChecked = true;
+  let postCount = 10;
+  let floorChecked = true;
+  let distance = 60;
+  let vatIncluded = false;
+
+  function won(n){ return n.toLocaleString('ko-KR') + '원'; }
+
+  // 항목을 고를 때마다 해당 총액 카드를 살짝 반짝여서 "반영됐다"는 걸 체감시킴
+  function flashCard(el){
+    el.classList.remove('flash');
+    void el.offsetWidth; // 리플로우를 강제해서 애니메이션을 다시 재생시킴
+    el.classList.add('flash');
+  }
+  function flashTotal(){ flashCard(document.querySelector('.total-card')); }
+
+  // ---- 바레바 시공 신청 체크박스 (해제 시 지주 개수·마루바닥 항목이 견적에서 빠짐) ----
+  const barrebaCheckbox = document.getElementById('barrebaCheckbox');
+  const barrebaDetail = document.getElementById('barrebaDetail');
+  barrebaCheckbox.addEventListener('click', () => { barrebaChecked = !barrebaChecked; render(); flashTotal(); });
+
+  // ---- 바레바 stepper ----
+  document.getElementById('plus').addEventListener('click', () => { postCount++; render(); flashTotal(); });
+  document.getElementById('minus').addEventListener('click', () => { if(postCount>1) postCount--; render(); flashTotal(); });
+
+  // ---- 마루바닥 체크박스 ----
+  const floorCheckbox = document.getElementById('floorCheckbox');
+  floorCheckbox.addEventListener('click', () => { floorChecked = !floorChecked; render(); flashTotal(); });
+
+  // ---- 부가세(VAT) 포함 체크박스 ----
+  const vatCheckbox = document.getElementById('vatCheckbox');
+  vatCheckbox.addEventListener('click', () => { vatIncluded = !vatIncluded; render(); flashTotal(); });
+
+  // ---- 거리 입력 ----
+  document.getElementById('distance').addEventListener('input', (e) => {
+    distance = Math.max(0, parseInt(e.target.value) || 0);
+    render();
+    flashTotal();
+  });
+
+  // ---- 고객 주소 → 카카오맵에서 거리 확인 ----
+  // 이 페이지는 외부 API로 직접 거리를 계산하지 않는다(보안상 이 페이지에서는
+  // 외부 서버로의 자동 조회가 막혀 있어, 시도할 경우 모든 주소에서 오류가 남).
+  // 카카오맵의 출발지/도착지 동시 자동입력 링크(sName/eName)는 실제로는 동작하지
+  // 않는 것으로 확인되어(카카오 측 비공식·미지원 방식), 대신 아래 흐름을 쓴다:
+  //   ① 기준지 주소를 한 번에 복사 → ② 고객 주소로 카카오맵 검색을 새 창으로 열기
+  //   → ③ 새 창에서 출발지에 붙여넣기 + 도착지 선택 → ④ 실제 거리 확인 후 직접 입력
+  const BASE_ADDRESS_LABEL = '하남시 풍산동 로얄팰리스테크노1차';
+
+  const baseAddrText = document.getElementById('baseAddrText');
+  const baseCopyBtn = document.getElementById('baseCopyBtn');
+  const addrInput = document.getElementById('addrInput');
+  const addrCalcBtn = document.getElementById('addrCalcBtn');
+  const addrStatus = document.getElementById('addrStatus');
+  const distanceInputEl = document.getElementById('distance');
+
+  baseCopyBtn.addEventListener('click', async () => {
+    const text = baseAddrText.textContent.trim();
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        await navigator.clipboard.writeText(text);
+      } else {
+        throw new Error('clipboard API 없음');
+      }
+      const orig = baseCopyBtn.textContent;
+      baseCopyBtn.textContent = '✅ 복사됨';
+      setTimeout(() => { baseCopyBtn.textContent = orig; }, 1500);
+    } catch(e){
+      addrStatus.textContent = `자동 복사에 실패했습니다. 기준지 주소를 직접 선택해 복사해주세요: "${text}"`;
+      addrStatus.className = 'addr-status error';
+    }
+  });
+
+  // window.open()으로 새 창을 여는 방식은 일부 모바일 브라우저·인앱 웹뷰에서
+  // 팝업으로 취급돼 차단되는 경우가 많다(사용자가 "카카오맵이 안 열려"라고 보고).
+  // 그래서 addrCalcBtn을 실제 <a target="_blank"> 링크로 만들고, href를 입력할 때마다
+  // 미리 채워둔다 — 이러면 브라우저는 이걸 스크립트 팝업이 아니라 사용자가 직접 누른
+  // "링크 열기"로 인식해서 훨씬 안정적으로 새 탭/카카오맵 앱이 열린다.
+  function updateKakaoLink(){
+    const query = addrInput.value.trim();
+    if(!query){
+      addrCalcBtn.href = 'https://map.kakao.com/';
+      addrCalcBtn.classList.add('disabled');
+      return;
+    }
+    addrCalcBtn.href = 'https://map.kakao.com/link/search/' + encodeURIComponent(query);
+    addrCalcBtn.classList.remove('disabled');
+  }
+
+  addrCalcBtn.addEventListener('click', () => {
+    const query = addrInput.value.trim();
+    if(!query){
+      addrStatus.textContent = '고객 주소를 입력해주세요.';
+      addrStatus.className = 'addr-status error';
+      return;
+    }
+    addrStatus.textContent = `새 창이 열리면 상단 "길찾기" 탭 → 출발지 칸에 붙여넣기(복사해둔 "${BASE_ADDRESS_LABEL}") → 도착지에서 방금 검색된 "${query}"를 선택하면 실제 왕복거리가 나옵니다. 그 값을 아래 칸에 입력해주세요.`;
+    addrStatus.className = 'addr-status ok';
+  });
+  addrInput.addEventListener('input', updateKakaoLink);
+  updateKakaoLink();
+
+  function render(){
+    barrebaCheckbox.classList.toggle('off', !barrebaChecked);
+    barrebaDetail.style.display = barrebaChecked ? 'block' : 'none';
+
+    document.getElementById('postCount').textContent = postCount;
+
+    const baseRow = document.getElementById('baseRow');
+    const tier1Row = document.getElementById('tier1Row');
+    const tier2Row = document.getElementById('tier2Row');
+    const surchargeRow = document.getElementById('surchargeRow');
+    const totalBadge = document.querySelector('.total-badge');
+
+    let barrebaConstruction = 0;
+    let surcharge = 0;
+
+    if(barrebaChecked){
+      totalBadge.innerHTML = `견적 총액 (지주 <span id="totalPostLabel">${postCount}</span>개 기준)`;
+
+      const tier1Units = Math.max(0, Math.min(postCount, 10) - 6);
+      const tier1Cost = tier1Units * PRICES.tier1Unit;
+      const tier2Units = Math.max(0, postCount - 10);
+      const tier2Cost = tier2Units * PRICES.tier2Unit;
+      barrebaConstruction = PRICES.base + tier1Cost + tier2Cost;
+
+      document.getElementById('baseCost').textContent = won(PRICES.base);
+      baseRow.style.display = 'flex';
+
+      if(tier1Units > 0){
+        document.getElementById('tier1Label').textContent = `추가 (7~${6+tier1Units}개: ${tier1Units}개 × ${(PRICES.tier1Unit/10000)}만원)`;
+        document.getElementById('tier1Cost').textContent = '+' + won(tier1Cost);
+        tier1Row.style.display = 'flex';
+      } else { tier1Row.style.display = 'none'; }
+
+      if(tier2Units > 0){
+        document.getElementById('tier2Label').textContent = `추가 (11~${postCount}개: ${tier2Units}개 × ${(PRICES.tier2Unit/10000)}만원)`;
+        document.getElementById('tier2Cost').textContent = '+' + won(tier2Cost);
+        tier2Row.style.display = 'flex';
+      } else { tier2Row.style.display = 'none'; }
+
+      if(floorChecked){
+        surcharge = Math.round(barrebaConstruction * PRICES.floorSurchargeRate);
+        document.getElementById('surchargeCost').textContent = '+' + won(surcharge);
+        surchargeRow.querySelector('span').textContent = `마루바닥 할증 (${Math.round(PRICES.floorSurchargeRate*100)}%)`;
+        surchargeRow.style.display = 'flex';
+      } else { surchargeRow.style.display = 'none'; }
+      floorCheckbox.classList.toggle('off', !floorChecked);
+    } else {
+      totalBadge.textContent = '견적 총액';
+      baseRow.style.display = 'none';
+      tier1Row.style.display = 'none';
+      tier2Row.style.display = 'none';
+      surchargeRow.style.display = 'none';
+    }
+
+    // 출장거리비는 바레바 시공이 선택돼 있을 때만 부과한다
+    // (아무 것도 선택 안 했는데 거리비만 잡히는 것을 방지)
+    const needsVisit = barrebaChecked;
+    const extraDistance = Math.max(0, distance - PRICES.freeDistance);
+    const distanceCost = needsVisit ? extraDistance * PRICES.distanceUnit : 0;
+    const distanceRow = document.getElementById('distanceRow');
+    if(distanceCost > 0){
+      document.getElementById('distanceCost').textContent = '+' + won(distanceCost);
+      distanceRow.style.display = 'flex';
+    } else { distanceRow.style.display = 'none'; }
+
+    document.querySelector('.distance-card .card-desc').innerHTML =
+      `기준지로부터 왕복 <strong>${PRICES.freeDistance}km 무료</strong>, 이후 km당 ${PRICES.distanceUnit.toLocaleString('ko-KR')}원`;
+
+    const subtotal = barrebaConstruction + surcharge + distanceCost;
+
+    const vatRow = document.getElementById('vatRow');
+    const vatDivider = document.getElementById('vatDivider');
+    let vatAmount = 0;
+    if(vatIncluded){
+      vatAmount = Math.round(subtotal * 0.1);
+      document.getElementById('vatCost').textContent = '+' + won(vatAmount);
+      vatRow.style.display = 'flex';
+      vatDivider.style.display = 'block';
+    } else {
+      vatRow.style.display = 'none';
+      vatDivider.style.display = 'none';
+    }
+    vatCheckbox.classList.toggle('off', !vatIncluded);
+
+    const total = subtotal + vatAmount;
+    document.getElementById('totalAmount').textContent = total.toLocaleString('ko-KR');
+  }
+
+  render();
+
+  // ---- 전체 선택 초기화 ----
+  // 고객이 입력한 선택 상태(체크박스/수량/거리/사진 등)는 어디에도 저장되지 않으므로,
+  // 새로고침 한 번이면 정확하고 안전하게 모든 걸 처음 상태로 되돌릴 수 있다.
+  document.getElementById('resetAllBtn').addEventListener('click', () => {
+    if(confirm('지금까지 선택한 모든 항목이 초기화됩니다. 계속할까요?')){
+      location.reload();
+    }
+  });
+
+  // ---- 이 견적 공유/복사하기 (바레바 시공 견적 전체) ----
+  function buildQuoteShareText(){
+    const lines = ['[발레바빌더 견적서]', ''];
+    document.querySelectorAll('.breakdown').forEach(box => {
+      box.querySelectorAll(':scope > .row').forEach(row => {
+        if(row.offsetParent === null) return; // 화면에 안 보이는(숨김) 항목은 제외
+        const spans = row.querySelectorAll('span');
+        if(spans.length === 2) lines.push(`${spans[0].textContent} ${spans[1].textContent}`);
+      });
+    });
+    lines.push('');
+    lines.push(`총액: ${document.getElementById('totalAmount').textContent}원`);
+    lines.push('(자재비 별도, 실측 후 변동될 수 있음)');
+    return lines.join('\n');
+  }
+
+  document.getElementById('shareQuoteBtn').addEventListener('click', async (e) => {
+    const text = buildQuoteShareText();
+    if(navigator.share){
+      try{ await navigator.share({ title: '발레바빌더 견적서', text }); return; }
+      catch(err){ if(err.name === 'AbortError') return; }
+    }
+    const btn = e.currentTarget;
+    const finish = (msg) => { const orig = btn.textContent; btn.textContent = msg; setTimeout(() => { btn.textContent = orig; }, 1500); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(() => finish('✅ 견적 내용이 복사됐습니다!')).catch(() => finish('❌ 복사 실패'));
+    } else {
+      finish('❌ 이 브라우저는 공유/복사 미지원');
+    }
+  });
+
+  // ===================== 관리자 모드 =====================
+  const adminOverlay = document.getElementById('adminOverlay');
+  const adminModal = document.getElementById('adminModal');
+  const gearBtn = document.getElementById('gearBtn');
+
+  function getAdminPassword(){
+    return localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_ADMIN_PW;
+  }
+
+  function isAuthed(){
+    return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
+  }
+
+  function openAdmin(){
+    adminOverlay.classList.add('open');
+    isAuthed() ? renderAdminPanel() : renderAdminLogin();
+  }
+
+  function closeAdmin(){
+    adminOverlay.classList.remove('open');
+  }
+
+  adminOverlay.addEventListener('click', (e) => {
+    if(e.target === adminOverlay) closeAdmin();
+  });
+
+  gearBtn.addEventListener('click', openAdmin);
+
+  function renderAdminLogin(){
+    adminModal.innerHTML = `
+      <div class="admin-modal-header">
+        <h2>관리자 로그인</h2>
+      </div>
+      <div class="admin-sub">비밀번호를 입력하면 단가를 수정할 수 있습니다.</div>
+      <input type="password" inputmode="numeric" class="admin-login-input" id="adminPwInput" placeholder="••••" autofocus>
+      <div class="admin-error" id="adminLoginError">비밀번호가 올바르지 않습니다.</div>
+      <div class="admin-actions">
+        <button class="btn-secondary" id="adminLoginCancel">취소</button>
+        <button class="btn-primary" id="adminLoginSubmit">확인</button>
+      </div>
+    `;
+    const pwInput = document.getElementById('adminPwInput');
+    const errEl = document.getElementById('adminLoginError');
+    function attempt(){
+      if(pwInput.value === getAdminPassword()){
+        sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+        renderAdminPanel();
+      } else {
+        errEl.style.display = 'block';
+        pwInput.value = '';
+        pwInput.focus();
+      }
+    }
+    document.getElementById('adminLoginSubmit').addEventListener('click', attempt);
+    pwInput.addEventListener('keydown', (e) => { if(e.key === 'Enter') attempt(); });
+    document.getElementById('adminLoginCancel').addEventListener('click', closeAdmin);
+    pwInput.focus();
+  }
+
+  function renderAdminPanel(){
+    let sectionsHtml = '';
+    let currentSection = null;
+    ADMIN_FIELDS.forEach(f => {
+      if(f.section !== currentSection){
+        currentSection = f.section;
+        sectionsHtml += `<div class="admin-section-title">${currentSection}</div>`;
+      }
+      const val = f.percent ? Math.round(PRICES[f.key] * 100) : PRICES[f.key];
+      sectionsHtml += `
+        <div class="admin-field">
+          <label>${f.label}</label>
+          <div class="field-input">
+            <input type="number" min="0" step="${f.step || '1'}" data-key="${f.key}" data-percent="${!!f.percent}" value="${val}">
+            <span class="unit">${f.unit}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    adminModal.innerHTML = `
+      <div class="admin-modal-header">
+        <h2>관리자 설정 · 단가 관리</h2>
+        <button class="admin-link-btn" id="adminLogout">로그아웃</button>
+      </div>
+      <div class="admin-sub">여기서 수정한 단가는 이 기기의 계산기에 저장되어 계속 적용됩니다.</div>
+      ${sectionsHtml}
+      <div class="admin-section-title">비밀번호 변경</div>
+      <div class="admin-field">
+        <label>새 비밀번호 (변경하지 않으려면 비워두세요)</label>
+        <div class="field-input">
+          <input type="password" id="newAdminPw" placeholder="새 비밀번호">
+        </div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-secondary" id="adminCancel">취소</button>
+        <button class="btn-primary" id="adminSave">저장</button>
+      </div>
+      <button class="btn-reset" id="adminReset">전체 기본값으로 초기화</button>
+    `;
+
+    document.getElementById('adminCancel').addEventListener('click', closeAdmin);
+    document.getElementById('adminLogout').addEventListener('click', () => {
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      renderAdminLogin();
+    });
+    document.getElementById('adminSave').addEventListener('click', saveAdminPanel);
+    document.getElementById('adminReset').addEventListener('click', resetAdminPrices);
+  }
+
+  function saveAdminPanel(){
+    const inputs = adminModal.querySelectorAll('.admin-field input[data-key]');
+    const newPrices = {};
+    inputs.forEach(inp => {
+      const key = inp.dataset.key;
+      const isPercent = inp.dataset.percent === 'true';
+      const raw = Math.max(0, parseFloat(inp.value) || 0);
+      newPrices[key] = isPercent ? raw / 100 : raw;
+    });
+    Object.assign(PRICES, newPrices);
+    localStorage.setItem(ADMIN_PRICES_KEY, JSON.stringify(PRICES));
+
+    const newPw = document.getElementById('newAdminPw').value.trim();
+    if(newPw){
+      localStorage.setItem(ADMIN_PW_KEY, newPw);
+    }
+
+    refreshExtraItemUnitPrices();
+    render();
+    closeAdmin();
+  }
+
+  function resetAdminPrices(){
+    if(!confirm('모든 단가를 기본값으로 초기화하시겠습니까?')) return;
+    localStorage.removeItem(ADMIN_PRICES_KEY);
+    Object.assign(PRICES, DEFAULT_PRICES);
+    refreshExtraItemUnitPrices();
+    render();
+    renderAdminPanel();
+  }
+</script>
+
+</body></html>
